@@ -1,22 +1,14 @@
 window.addEventListener('pageshow', () => {
-    const userId = getCookie("userId");
-    if (!userId) {
+    // Verify auth via server (JWT cookie), redirect if not logged in
+    const url = '../../server/data-controller/check-user-info.php?action=check-user-info';
+    fetch(url, { credentials: 'same-origin' })
+      .then(r => r.text())
+      .then(t => {
+        if (t === 'no-data') {
+          window.location.href = '../login/';
+        }
+      })
+      .catch(() => {
         window.location.href = '../login/';
-    } 
+      });
 });
-
-function getCookie(cname) {
-    let name = cname + "=";
-    let decodedCookie = decodeURIComponent(document.cookie);
-    let ca = decodedCookie.split(';');
-    for(let i = 0; i <ca.length; i++) {
-      let c = ca[i];
-      while (c.charAt(0) == ' ') {
-        c = c.substring(1);
-      }
-      if (c.indexOf(name) == 0) {
-        return c.substring(name.length, c.length);
-      }
-    }
-    return "";
-}

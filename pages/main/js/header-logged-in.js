@@ -21,15 +21,23 @@ function getCookie(cname) {
   const headerAccountBtn = headerAccountBtnGroup.querySelector(".account-btn-group__account-btn");
   
   window.addEventListener("load",function(event){
-    const userId = getCookie("userId");
-    console.log("userId: ", userId);
-      if (userId) {
+    fetch("../../server/data-controller/check-user-info.php?action=check-user-info")
+      .then(r => r.text())
+      .then(t => {
+        const loggedIn = t !== 'no-data';
+        if (loggedIn) {
           headerLoginBtn.classList.add("hide");
           headerSignUpBtn.classList.add("hide");
           headerAccountBtn.classList.remove("hide");
-      } else {
+        } else {
           headerLoginBtn.classList.remove("hide");
           headerSignUpBtn.classList.remove("hide");
           headerAccountBtn.classList.add("hide");
-      }
+        }
+      })
+      .catch(() => {
+        headerLoginBtn.classList.remove("hide");
+        headerSignUpBtn.classList.remove("hide");
+        headerAccountBtn.classList.add("hide");
+      });
   });

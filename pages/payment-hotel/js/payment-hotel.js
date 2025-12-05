@@ -1,3 +1,4 @@
+// VNPAY removed
 let HotelSearchInfo;
 
 if (sessionStorage.getItem("HotelSearchInfo")) {
@@ -32,27 +33,23 @@ window.addEventListener('load', () => {
     xhttp.send();
 });
 
-const btnPayment = document.querySelector(".btn-payment");
-
-function getCookie(cname) {
-    let name = cname + "=";
-    let decodedCookie = decodeURIComponent(document.cookie);
-    let ca = decodedCookie.split(';');
-    for(let i = 0; i <ca.length; i++) {
-      let c = ca[i];
-      while (c.charAt(0) == ' ') {
-        c = c.substring(1);
-      }
-      if (c.indexOf(name) == 0) {
-        return c.substring(name.length, c.length);
-      }
+document.addEventListener('click', async function(e){
+    if (e.target.closest('.btn-zalopay')){
+        try {
+            const form = new FormData();
+            form.append('amount', calculateTotalPrice());
+            const r = await fetch('../../server/data-controller/payment-zalopay/initiate.php', { method:'POST', body: form, credentials:'include' });
+            const data = await r.json();
+            if (data.redirect){ window.location.href = data.redirect; }
+            else { alert('Không thể khởi tạo ZaloPay: ' + (data.error || 'unknown')); }
+        } catch(err){ alert('Lỗi khởi tạo ZaloPay'); }
     }
-    return "";
-  }
+});
+
+const btnPayment = document.querySelector(".btn-payment");
 
 
 btnPayment.addEventListener("click", function () { 
-    let userId = getCookie("userId");
     let xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function () {
         if (this.readyState == 4 && this.status == 200) {
@@ -69,7 +66,7 @@ btnPayment.addEventListener("click", function () {
     };
     xhttp.open("POST", "../../server/data-controller/payment-hotel/post-data.php", true);
     xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-    xhttp.send(`action=payment&userId=${userId}&roomID=${hotelPaymentInfo.ID}&checkIn=${HotelSearchInfo.checkinDate}&checkOut=${HotelSearchInfo.checkoutDate}&totalPrice=${calculateTotalPrice()}`);
+    xhttp.send(`action=payment&roomID=${hotelPaymentInfo.ID}&checkIn=${HotelSearchInfo.checkinDate}&checkOut=${HotelSearchInfo.checkoutDate}&totalPrice=${calculateTotalPrice()}`);
 });
 
 function calculateTotalPrice() {

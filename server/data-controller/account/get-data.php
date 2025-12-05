@@ -1,10 +1,11 @@
 <?php
 require_once('../connect.php');
+require_once(__DIR__ . '/../auth.php');
 
 $action = $_GET['action'];
 
 if($action == 'load-bill'){
-    $userId = $_GET['userId'];
+    $userId = require_auth();
     $sql = "SELECT * FROM invoice 
     WHERE `User_id` = '$userId'
     ORDER BY `Id` DESC;
@@ -38,7 +39,7 @@ if($action == 'get-bill-id'){
 }
 
 if($action == 'load-account-info'){
-    $userId = $_GET['userId'];
+    $userId = require_auth();
     $sql = "SELECT * FROM user as t1 
     INNER JOIN passport as t2 
     ON t1.`Passport_id` = t2.`Id`

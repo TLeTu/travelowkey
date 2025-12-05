@@ -216,22 +216,27 @@ function getCookie(cname) {
     return "";
   }
 
-document.addEventListener('click', function (e) {
+async function checkLoginAndProfileComplete() {
+    try {
+        const r = await fetch('../../server/data-controller/check-user-info.php?action=check-user-info', { credentials: 'include' });
+        const t = await r.text();
+        if (!r.ok || t === 'no-data') return { loggedIn: false, profileComplete: false };
+        let info = JSON.parse(t)[0];
+        let complete = true;
+        for (const k in info) { if (info[k] == null) { complete = false; break; } }
+        return { loggedIn: true, profileComplete: complete };
+    } catch { return { loggedIn: false, profileComplete: false }; }
+}
+
+document.addEventListener('click', async function (e) {
     if (e.target.classList.contains('select-btn')) {
-        const userId = getCookie("userId");
-        if (!userId) {
-            window.location.href = "../login"
-            return;
-        }
-        const userAuth = getCookie("userAuth");
-        if (userAuth == "false") {
-            window.location.href = "../account"
-            return;
-        }
+        const status = await checkLoginAndProfileComplete();
+        if (!status.loggedIn) { window.location.href = "../login"; return; }
+        if (!status.profileComplete) { window.location.href = "../account"; return; }
         transferPaymentInfo.transferID = e.target.closest(".result-item").id;
         transferPaymentInfo.price = e.target.closest(".result-item").querySelector("#price").querySelector(".price-text").id;
         transferPaymentInfo.name = e.target.closest(".result-item").querySelector(".title").innerText;
         sessionStorage.setItem("transferPaymentInfo", JSON.stringify(transferPaymentInfo));
-        window.location.href = "../payment-transfer"
+        window.location.href = "../payment-transfer";
     }
 });

@@ -25,10 +25,9 @@ document.querySelector(".btn-signup").addEventListener("click", function(event) 
     .then(response => response.json())
     .then(data => {
         if (data.status === 'success') {
-            console.log("Signup successful! Email:", email, "Phone:", phone, "Password:", password);
-            alert("Đăng ký thành công");
-            setCookie('userId', data.userId, 1);
-            CheckUserInfo(data.userId);
+            console.log("Signup successful! Email:", email, "Phone:", phone);
+            alert("Đăng ký thành công. Vui lòng đăng nhập.");
+            window.location.href = "../login/";
         } else {
             alert("Error: " + data.message);
         }
@@ -38,37 +37,7 @@ document.querySelector(".btn-signup").addEventListener("click", function(event) 
     });
 });
 
-function CheckUserInfo(userId) {
-    let xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function () {
-      if (this.readyState == 4 && this.status == 200) {
-        try {
-          let userInfo = JSON.parse(this.responseText)[0];
-            //check if any info in userInfo object is null
-            setCookie('userAuth', true, 1);
-            for (let key in userInfo) {
-                if (userInfo[key] == null) {
-                    //redirect to info page
-                    setCookie('userAuth', false, 1);
-                }
-            }
-            if(getCookie('userAuth') == 'true'){
-                window.location.href = "../main/"; //Chỉnh đường dẫn
-            }else{
-                window.location.href = "../account/"; //Chỉnh đường dẫn
-            }
-        } catch (err) {
-        }
-      }
-    };
-    xhttp.open(
-      "GET",
-      "../../server/data-controller/check-user-info.php?action=check-user-info&userId=" +
-        userId,
-      true
-    );
-    xhttp.send();
-}
+// After signup, users must login to receive an auth token.
 
 function setCookie(cname, cvalue, exdays) {
     const d = new Date();

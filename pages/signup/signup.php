@@ -1,22 +1,12 @@
 <?php
 header('Content-Type: application/json');
-
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "db_ie104";
-
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+require_once(__DIR__ . '/../../server/data-controller/connect.php');
 
 $data = json_decode(file_get_contents('php://input'), true);
 
 $email = $data['email'];
 $phone = $data['phone'];
-$password = $data['password'];
+$passwordInput = $data['password'];
 
 $sql = "SELECT * FROM user WHERE Email = ? OR Phone = ?";
 $stmt = $conn->prepare($sql);
@@ -35,9 +25,12 @@ if ($result->num_rows > 0) {
     $passport_stmt->bind_param("s", $unique_passport_id);
 
     if ($passport_stmt->execute()) {
+        // Hash password (PASSWORD_DEFAULT)
+        $hashed = password_hash($passwordInput, PASSWORD_DEFAULT);
+
         $sql = "INSERT INTO user (Id, Email, Phone, Password, Passport_id) VALUES (?, ?, ?, ?, ?)";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("sssss", $unique_id, $email, $phone, $password, $unique_passport_id);
+        $stmt->bind_param("sssss", $unique_id, $email, $phone, $hashed, $unique_passport_id);
     
         if ($stmt->execute()) {
             echo json_encode(array('status' => 'success', 'userId' => $unique_id));

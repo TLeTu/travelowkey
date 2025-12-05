@@ -176,21 +176,26 @@ function getCookie(cname) {
   return "";
 }
 
-document.addEventListener('click', function (e) {
+async function checkLoginAndProfileComplete() {
+  try {
+    const r = await fetch('../../server/data-controller/check-user-info.php?action=check-user-info', { credentials: 'include' });
+    const t = await r.text();
+    if (!r.ok || t === 'no-data') return { loggedIn: false, profileComplete: false };
+    let info = JSON.parse(t)[0];
+    let complete = true;
+    for (const k in info) { if (info[k] == null) { complete = false; break; } }
+    return { loggedIn: true, profileComplete: complete };
+  } catch { return { loggedIn: false, profileComplete: false }; }
+}
+
+document.addEventListener('click', async function (e) {
   if (e.target.classList.contains('payment')) {
-    const userId = getCookie("userId");
-    if (!userId) {
-      window.location.href = "../login"
-      return;
-    }
-    const userAuth = getCookie("userAuth");
-    if (userAuth == "false") {
-        window.location.href = "../account"
-        return;
-    }
+    const status = await checkLoginAndProfileComplete();
+    if (!status.loggedIn) { window.location.href = "../login"; return; }
+    if (!status.profileComplete) { window.location.href = "../account"; return; }
     busPaymentInfo.ID = e.target.closest(".bus-book__BusItem").id;
     busPaymentInfo.ticketNumber = CoachSearchInfo.passengerQuantity;
     sessionStorage.setItem("busPaymentInfo", JSON.stringify(busPaymentInfo));
-    window.location.href = "../payment-bus"
+    window.location.href = "../payment-bus";
   }
-})
+});

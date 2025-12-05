@@ -2,6 +2,7 @@
 
 require_once('../connect.php');
 require_once('./transfer-bill-info.php');
+require_once(__DIR__ . '/../auth.php');
 
 $action = $_POST["action"];
 
@@ -13,7 +14,7 @@ $transferBillInfo->endDate = $_POST["endDate"];
 $transferBillInfo->endTime = $_POST["endTime"];
 $transferBillInfo->totalPrice = $_POST["totalPrice"];
 
-$userID = $_POST["userID"];
+$userID = require_auth();
 
 if ($action == "payment") {
     $invoiceID = uniqid("I");

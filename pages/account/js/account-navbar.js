@@ -12,9 +12,13 @@ function navigateTab(e) {
         userPane.classList.add("hide");
     }
     else if (e.currentTarget.id === "btn-account-logout") {
-        //clear cookies and redirect to login page
-        document.cookie = "userId=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-        window.location.href = "../main/";
+        // Clear server auth cookie then local userId cookie and redirect
+        fetch("../../server/data-controller/auth-logout.php", { method: "POST" })
+            .catch(() => {})
+            .finally(() => {
+                document.cookie = "userId=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                window.location.href = "../main/";
+            });
     }
 }
 

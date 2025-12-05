@@ -1,8 +1,8 @@
 <?php
 
 $servername = "localhost";
-$username = "root";
-$password = "";
+$username = "is207";
+$password = "admin";
 $dbname = "db_ie104";
 
 // Create connection

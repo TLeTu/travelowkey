@@ -1,5 +1,6 @@
 <?php
 require_once('./searched-flight-info.php');
+require_once(__DIR__ . '/../connect.php');
 
 $action = $_POST["action"];
 if ($action=="load"){
@@ -23,16 +24,6 @@ $departureDate = date_create($searchedFlightInfo->departureDate);
 $searchedFlightInfo->departureDate = date_format($departureDate, "Y-m-d");}
 
 if ($action == "load") {
-    $servername = "localhost";
-    $username = "root";
-    $password = "";
-    $dbname = "db_ie104";
-
-    $conn = new mysqli($servername, $username, $password, $dbname);
-
-    if ($conn->connect_error) {
-        die("Connection failed: " . $conn->connect_error);
-    }
 
     if ($sortType == "Giá thấp nhất") {
         $sql = "SELECT * FROM flight WHERE `From` LIKE '%$searchedFlightInfo->departure%' AND `To` LIKE '%$searchedFlightInfo->destination%' AND `SeatClass` LIKE '%$searchedFlightInfo->seatType%' AND `Date` > '$searchedFlightInfo->departureDate' AND `NumSeat` >=$searchedFlightInfo->numOfSeat ORDER BY `Price` ASC LIMIT $pageLimit";
@@ -66,16 +57,7 @@ if ($action == "load") {
     $conn->close();
 }
 if ($action == 'getDepartureLocation'){
-    $servername = "localhost";
-    $username = "root";
-    $password = "";
-    $dbname = "db_ie104";
-
-    $conn = new mysqli($servername, $username, $password, $dbname);
-
-    if ($conn->connect_error) {
-        die("Connection failed: " . $conn->connect_error);
-    }
+    // connection available from included connect.php
     $sql = "SELECT flight.From FROM `flight` GROUP BY flight.From";
     $result = $conn->query($sql);
 
@@ -85,16 +67,7 @@ if ($action == 'getDepartureLocation'){
     } 
 }
 if ($action == 'getArrivalLocation'){
-    $servername = "localhost";
-    $username = "root";
-    $password = "";
-    $dbname = "db_ie104";
-
-    $conn = new mysqli($servername, $username, $password, $dbname);
-
-    if ($conn->connect_error) {
-        die("Connection failed: " . $conn->connect_error);
-    }
+    // connection available from included connect.php
     $sql = "SELECT flight.To FROM `flight` GROUP BY flight.To";
     $result = $conn->query($sql);
 

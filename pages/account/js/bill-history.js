@@ -1,5 +1,3 @@
-const userId = getCookie("userId");
-
 const billContainer = document.getElementById("bill-container");
 const flightBillContainer = document.getElementById("flight-bill");
 const busBillContainer = document.getElementById("bus-bill");
@@ -7,22 +5,6 @@ const transferBillContainer = document.getElementById("transfer-bill");
 const hotelBillContainer = document.getElementById("hotel-bill");
 
 window.addEventListener("load", LoadBill);
-
-function getCookie(cname) {
-  let name = cname + "=";
-  let decodedCookie = decodeURIComponent(document.cookie);
-  let ca = decodedCookie.split(";");
-  for (let i = 0; i < ca.length; i++) {
-    let c = ca[i];
-    while (c.charAt(0) == " ") {
-      c = c.substring(1);
-    }
-    if (c.indexOf(name) == 0) {
-      return c.substring(name.length, c.length);
-    }
-  }
-  return "";
-}
 
 function LoadBill() {
   let xhttp = new XMLHttpRequest();
@@ -40,8 +22,7 @@ function LoadBill() {
   };
   xhttp.open(
     "GET",
-    "../../server/data-controller/account/get-data.php?action=load-bill&userId=" +
-      userId,
+    "../../server/data-controller/account/get-data.php?action=load-bill",
     true
   );
   xhttp.send();

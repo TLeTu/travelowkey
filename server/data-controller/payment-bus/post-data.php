@@ -1,11 +1,12 @@
 <?php
 
 require_once('../connect.php');
+require_once(__DIR__ . '/../auth.php');
 
 $action = $_POST["action"];
 
 $totalPrice = $_POST["totalPrice"];
-$userId = $_POST["userId"];
+$userId = require_auth();
 $busID = $_POST["busID"];
 $ticketNumber = $_POST["ticketNumber"];
 

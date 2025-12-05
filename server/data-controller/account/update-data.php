@@ -1,5 +1,6 @@
 <?php
 require_once('../connect.php');
+require_once(__DIR__ . '/../auth.php');
 
 $action = $_POST['action'];
 
@@ -7,7 +8,7 @@ $action = $_POST['action'];
 if($action == 'update-account-info'){
     $data = json_decode($_POST['data'], true);
     $changeInfoNames = json_decode($_POST['changeInfoNames'], true);
-    $userId = $_POST['userId'];
+    $userId = require_auth();
 
     $sql = "UPDATE user as t1
         INNER JOIN passport as t2
